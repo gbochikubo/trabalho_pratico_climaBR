@@ -11,6 +11,10 @@ import { SearchCityService } from 'src/domain/services/search-city.service';
 import { LoadWeatherService } from 'src/domain/services/load-weather.service';
 import { LocalCityRepository } from 'src/data/local-city-repository';
 import { ApiWeatherRepository } from 'src/data/api-weather-repository';
+import { StoreModule } from '@ngrx/store';
+import { Geolocation } from '@ionic-native/geolocation';
+import { GeolocalizationSearch } from 'src/domain/services/geolocalization';
+
 
 const createSearchCityService = () => {
   return new SearchCityService(new LocalCityRepository());
@@ -23,6 +27,14 @@ const createLoadWeatherService = (http: HttpClient) => {
   );
 };
 
+const createGeolocalizationSearch= () =>{
+  return new GeolocalizationSearch(new Geolocation);
+}
+
+const createLocalCityRepository= () =>{
+  return new LocalCityRepository();
+}
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -31,6 +43,7 @@ const createLoadWeatherService = (http: HttpClient) => {
     IonicModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,
+    StoreModule.forRoot({}, {})
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
@@ -43,6 +56,14 @@ const createLoadWeatherService = (http: HttpClient) => {
       useFactory: createLoadWeatherService,
       deps: [HttpClient],
     },
+    {
+      provide: GeolocalizationSearch,
+      useFactory: createGeolocalizationSearch
+    },
+    {
+      provide: LocalCityRepository,
+      useFactory: createLocalCityRepository
+    }
   ],
   bootstrap: [AppComponent],
 })
